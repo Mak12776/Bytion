@@ -15,7 +15,7 @@
 #include <string.h>
 #include <errno.h>
 
-#define _VERSION "0.1"
+#define _VERSION "0.11"
 #define _CREATOR "Mohammad Amin Khakzadan"
 #define _CREATOR_GMAIL "mak12776@gmail.com"
 #define USAGE "Usage: %s [Option] [mode] file [file1] [fil2] [file3]\n"
@@ -38,7 +38,6 @@ Options:\n\
 #define INVALID_COM "invalid command: %s\n"
 #define INVALID_MODE "invalid mode: %s\n"
 #define DUPLICATE_OPT "duplicate option\n"
-#define DUPLICATE_MODE "duplicate mode\n"
 #define MEMORY_ERR "can't allocate memory\n"
 #define MISS_OPR "missing operand\n"
 #define MISS_OPT "missing option\n"
@@ -86,11 +85,12 @@ typedef int arg_number_list_t;
 void ReadDisplayFile(const char *filename);
 void ReadDisplayStrings(const char *filename);
 
+static inline void SetColor(const char clr);
 static inline bool Compare(const char *str1,const char *str2);
 static inline void ToReal(uchar in, uchar *out);
 static inline void ToHex(uchar in, uchar *out);
 static inline void ToChar(uchar in, uchar *out);
-static inline void printColored(char *input, char clr);
+static inline void printColored(const char *input, char clr);
 
 // variables
 int Work_number=1;
@@ -179,9 +179,14 @@ int main(int argc, char const *argv[])
         arg_number_list[check_index-1]=enum_type_no_mode;
         continue;
       }
+      if (Compare(argv[check_index]+1, "v") || Compare(argv[check_index]+1, "version")) //no-mode
+      {
+        printf("Bytion v" _VERSION "\nby " _CREATOR ", " _CREATOR_GMAIL "\n");
+        return 0;
+      }
       printf(_ERR_ INVALID_COM HELP_ERR, argv[check_index], argv[0]);
       return EBADMSG;
-    }
+      }
     else
     {
       arg_number_list[check_index-1]=enum_type_file;
@@ -228,9 +233,17 @@ int main(int argc, char const *argv[])
           break;
           default:
             printf(_ERR_ INVALID_MODE USE_DEFAULT_MODE, argv[check_index+1]);
+            program_mode = MODE_NOTHING;
+            goto Continue;
           break;
         }
       }
+      Continue:
+      continue;
+    }
+    if (arg_number_list[check_index]==enum_type_no_mode)
+    {
+      program_mode=MODE_NOTHING;
       continue;
     }
 
@@ -245,7 +258,19 @@ int main(int argc, char const *argv[])
   return 0;
 }
 
-static inline void printColored(char *input, const char clr)
+static inline void SetColor(const char clr)
+{
+  #ifdef __linux__
+  if (Color_fore!=clr)
+  {
+    printf("\033[%dm", Color_fore=clr);
+  }
+  #elif defined _WIN32 || defined _WIN64
+  #error Complete this function for windows
+  #endif
+}
+
+static inline void printColored(const char *input, const char clr)
 {
   #ifdef __linux__
   if (Color_fore==clr)
@@ -264,10 +289,8 @@ static inline void printColored(char *input, const char clr)
 static inline bool Compare(const char *str1,const char *str2)
 {
   while ( *str1 == *str2 ) {
-		if (!( *(str1) || *(str2) ) )
+		if (!( *(str1++) | *(str2++) ) )
 			return true;
-		str1++;
-		str2++;
 	}
 	return false;
 }
@@ -301,8 +324,8 @@ static inline void ToReal(uchar in, uchar *out)
 
 static inline void ToChar(uchar in, uchar *out)
 {
-  *out=' ';
-  *(out+1)=in;
+  *(out)=in;
+  *(out+1)=' ';
 }
 
 static inline void ToHex(uchar in, uchar *out)
@@ -377,6 +400,8 @@ void ReadDisplayStrings(const char *filename)
     else
       str=0;
   }
+  SetColor(COL_DEFAULT);
+  printf("^ %s, %ld ^\n", filename, size);
   free(buffer);
 }
 
@@ -488,6 +513,7 @@ void ReadDisplayFile(const char *filename)
       }
     break;
     case 0b111:
+      *(out+3)=' ';
       while ((c=getc(pFile)) != EOF) // color, char, Real
       {
         if (c>32 && c<127)
@@ -516,6 +542,7 @@ void ReadDisplayFile(const char *filename)
       }
     break;
     case 0b110:
+      *(out+3)=' ';
       while ((c=getc(pFile)) != EOF) // char, Real
       {
         if (c>32 && c<127)
@@ -541,6 +568,7 @@ void ReadDisplayFile(const char *filename)
       }
     break;
     case 0b101:
+      *(out+3)=' ';
       while ((c=getc(pFile)) != EOF) // color, Real
       {
         ToReal(c, out);
@@ -560,6 +588,7 @@ void ReadDisplayFile(const char *filename)
       }
     break;
     case 0b100:
+      *(out+3)=' ';
       while ((c=getc(pFile)) != EOF) // Real
       {
         ToReal(c, out);
@@ -577,6 +606,7 @@ void ReadDisplayFile(const char *filename)
     break;
   }
 
+  SetColor(COL_DEFAULT);
   if (NoC==NoColumn)
     printf("^ %s, %ld ^\n", filename, size);
   else
