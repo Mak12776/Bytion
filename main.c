@@ -13,7 +13,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef __linux__
 #include <errno.h>
+#elif defined _WIN32 || defined _WIN64
+#include <windows.h>
+#define EBADMSG 74;
+#endif
 
 #define _VERSION "0.11"
 #define _CREATOR "Mohammad Amin Khakzadan"
@@ -67,7 +73,15 @@ Options:\n\
 #define COL_WHITE 37
 #define COL_DEFAULT 39
 #elif defined _WIN32 || defined _WIN64
-#error Complete color section for windows
+#define COL_BLACK 0
+#define COL_RED 4
+#define COL_GREEN 2
+#define COL_YELLOW 6
+#define COL_BLUE 1
+#define COL_MAGENTA 5
+#define COL_CYAN 3
+#define COL_WHITE 7
+#define COL_DEFAULT 8
 #endif
 
 #define MODE_NOTHING 0
@@ -99,14 +113,20 @@ program_mode_t program_mode=MODE_NOTHING;
 arg_number_list_t *arg_number_list=NULL;
 char Color_fore=COL_DEFAULT;
 uint NoColumn=DEF_NOC;
+#if defined _WIN32 || defined _WIN64
+HANDLE hConsole;
+#endif
 
 int main(int argc, char const *argv[])
 {
   #ifdef _DEBUG
   printf("---debuging mode---\n");
   #endif
+  
+  #if defined _WIN32 || defined _WIN64
+  hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+  #endif
   register int check_index=1;
-
   if (argc == 1)
   {
     printf(USAGE HELP_ERR, argv[0], argv[0]);
@@ -266,7 +286,10 @@ static inline void SetColor(const char clr)
     printf("\033[%dm", Color_fore=clr);
   }
   #elif defined _WIN32 || defined _WIN64
-  #error Complete this function for windows
+  if (Color_fore!=clr)
+  {
+    SetConsoleTextAttribute(hConsole, Color_fore=clr);
+  }
   #endif
 }
 
@@ -282,7 +305,11 @@ static inline void printColored(const char *input, const char clr)
     printf("\033[%dm%s", Color_fore=clr, input);
   }
   #elif defined _WIN32 || defined _WIN64
-  #error Complete this function for windows
+  if (Color_fore!=clr)
+  {
+	SetConsoleTextAttribute(hConsole, Color_fore=clr);
+  }
+  fputs(input, stdout);
   #endif
 }
 
