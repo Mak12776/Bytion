@@ -19,6 +19,7 @@
 #elif defined _WIN32 || defined _WIN64
 #include <windows.h>
 #define EBADMSG 74;
+#define EILSEQ 84
 #endif
 
 #define _VERSION "0.12"
@@ -86,6 +87,13 @@ Options:\n\
 #define COL_DEFAULT 8
 #endif
 
+#define COLOR_CHAR COL_YELLOW
+#define COLOR_ZERO COL_WHITE
+#define COLOR_DEFAULT COL_DEFAULT
+#if defined _WIN32 || defined _WIN64
+#define COLOR_ENV
+#endif
+
 #define MODE_NOTHING 0
 #define MODE_COLOR  0b001
 #define MODE_CHAR   0b010
@@ -122,14 +130,17 @@ HANDLE hConsole;
 
 int main(int argc, char const *argv[])
 {
+  register int check_index=1;
+
   #ifdef _DEBUG
   printf("---debuging mode---\n");
   #endif
 
   #if defined _WIN32 || defined _WIN64
   hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
+  SetConsoleTextAttribute(hConsole, Color_fore=COLOR_DEFAULT);
   #endif
-  register int check_index=1;
+
   if (argc == 1)
   {
     printf(USAGE HELP_ERR, argv[0], argv[0]);
@@ -286,6 +297,9 @@ int main(int argc, char const *argv[])
     printf(_ERR_ MISS_OPR HELP_ERR, argv[0]);
     return EBADMSG;
   }
+  #if defined _WIN32 || defined _WIN64
+    SetConsoleTextAttribute(hConsole, COLOR_ENV);
+  #endif
   return 0;
 }
 
@@ -542,15 +556,15 @@ void ReadDisplayFile(const char *filename)
         if (c>32 && c<127)
         {
           ToChar(c, out);
-          printColored(out, COL_YELLOW);
+          printColored(out, COLOR_CHAR);
         }
         else
         {
           ToHex(c, out);
           if (c==0)
-            printColored(out, COL_WHITE);
+            printColored(out, COLOR_ZERO);
           else
-            printColored(out, COL_DEFAULT);
+            printColored(out, COLOR_DEFAULT);
         }
         if (NoC>0)
         {
@@ -568,9 +582,9 @@ void ReadDisplayFile(const char *filename)
       {
         ToHex(c, out);
         if (c==0)
-          printColored(out, COL_WHITE);
+          printColored(out, COLOR_ZERO);
         else
-          printColored(out, COL_DEFAULT);
+          printColored(out, COLOR_DEFAULT);
         if (NoC>0)
         {
           NoC--;
@@ -590,15 +604,15 @@ void ReadDisplayFile(const char *filename)
         {
           *(out+2)=' ';
           ToChar(c, out);
-          printColored(out, COL_YELLOW);
+          printColored(out, COLOR_CHAR);
         }
         else
         {
           ToReal(c, out);
           if (c==0)
-            printColored(out, COL_WHITE);
+            printColored(out, COLOR_ZERO);
           else
-            printColored(out, COL_DEFAULT);
+            printColored(out, COLOR_DEFAULT);
         }
         if (NoC>0)
         {
@@ -643,9 +657,9 @@ void ReadDisplayFile(const char *filename)
       {
         ToReal(c, out);
         if (c==0)
-          printColored(out, COL_WHITE);
+          printColored(out, COLOR_ZERO);
         else
-          printColored(out, COL_DEFAULT);
+          printColored(out, COLOR_DEFAULT);
         if (NoC>0)
         {
           NoC--;
@@ -676,7 +690,7 @@ void ReadDisplayFile(const char *filename)
     break;
   }
 
-  SetColor(COL_DEFAULT);
+  SetColor(COLOR_DEFAULT);
   if (NoC==NoColumn)
     printf("^ %s, %ld ^\n", filename, size);
   else
