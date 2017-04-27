@@ -21,7 +21,7 @@
 #define EBADMSG 74;
 #endif
 
-#define _VERSION "0.11"
+#define _VERSION "0.12"
 #define _CREATOR "Mohammad Amin Khakzadan"
 #define _CREATOR_GMAIL "mak12776@gmail.com"
 #define USAGE "Usage: %s [Option] [mode] file [file1] [fil2] [file3]\n"
