@@ -1,4 +1,4 @@
-#define _DEBUG
+// #define _DEBUG
 
 #ifdef _DEBUG
 #define LOGV(t,x) printf("Log; %d: ", __LINE__);printf( #x ": %" #t "\n", x);
@@ -25,24 +25,26 @@
 #define _CREATOR "Mohammad Amin Khakzadan"
 #define _CREATOR_GMAIL "mak12776@gmail.com"
 #define USAGE "Usage: %s [Option] [mode] file [file1] [fil2] [file3]\n"
-#define HELP_DOC "\
+  #define HELP_DOC "\
 Options:\n\
-  -help                                   show this help and exit\n\
-  -m [mode], -mode [mode]                 you can specify modes for output results\n\
-                                          modes can be a string of letters\n\
-  -nm, -no-mode                           restore to default mode\n\
-  -d, -display                            read files and write them on stdout\n\
-    Modes:                                default mode: nothing\n\
-      c                                   colorful.\n\
-      l                                   show letters in another type.\n\
-      d                                   show bytes in decimal.\n\
-  -ds, -display-strings                   read files and write only strings on stdout\n\
-  -f [pattern], -find [pattern]           find hex pattern in files (under construction)\n\
+  -help                                     show this help and exit\n\
+  -n [number], -column-number [number]      specify number of output columns\n\
+  -m [mode], -mode [mode]                   specify modes for output results\n\
+                                            modes can be a string of letters\n\
+  -nm, -no-mode                             restore to default mode\n\
+  -d, -display                              read files and write them on stdout\n\
+    Modes:                                  default mode: nothing\n\
+      c                                     colorful.\n\
+      l                                     show letters in another type.\n\
+      d                                     show bytes in decimal.\n\
+  -ds, -display-strings                     read files and write only strings on stdout\n\
+  -f [pattern], -find [pattern]             find hex pattern in files (under construction)\n\
 "
 #define HELP_ERR "try %s -help for more information\n"
 #define _ERR_ "error: "
 #define INVALID_COM "invalid command: %s\n"
 #define INVALID_MODE "invalid mode: %s\n"
+#define INVALID_NUMBER "invalid number: %s\n"
 #define DUPLICATE_OPT "duplicate option\n"
 #define MEMORY_ERR "can't allocate memory\n"
 #define MISS_OPR "missing operand\n"
@@ -101,6 +103,7 @@ void ReadDisplayStrings(const char *filename);
 
 static inline void SetColor(const char clr);
 static inline bool Compare(const char *str1,const char *str2);
+static inline uint ConvertToReal(const char *str);
 static inline void ToReal(uchar in, uchar *out);
 static inline void ToHex(uchar in, uchar *out);
 static inline void ToChar(uchar in, uchar *out);
@@ -122,7 +125,7 @@ int main(int argc, char const *argv[])
   #ifdef _DEBUG
   printf("---debuging mode---\n");
   #endif
-  
+
   #if defined _WIN32 || defined _WIN64
   hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
   #endif
@@ -199,6 +202,17 @@ int main(int argc, char const *argv[])
         arg_number_list[check_index-1]=enum_type_no_mode;
         continue;
       }
+      if (Compare(argv[check_index]+1, "n") || Compare(argv[check_index]+1, "column-number")) //column-number
+      {
+        errno=0;
+        NoColumn=ConvertToReal(argv[++check_index]);
+        if (errno)
+        {
+          printf(_ERR_ INVALID_NUMBER, argv[check_index]);
+          return EBADMSG;
+        }
+        continue;
+      }
       if (Compare(argv[check_index]+1, "v") || Compare(argv[check_index]+1, "version")) //no-mode
       {
         printf("Bytion v" _VERSION "\nby " _CREATOR ", " _CREATOR_GMAIL "\n");
@@ -266,15 +280,12 @@ int main(int argc, char const *argv[])
       program_mode=MODE_NOTHING;
       continue;
     }
-
   }
-  LOGV(d, Work_number)
   if (Work_number==1)
   {
     printf(_ERR_ MISS_OPR HELP_ERR, argv[0]);
     return EBADMSG;
   }
-
   return 0;
 }
 
@@ -307,46 +318,78 @@ static inline void printColored(const char *input, const char clr)
   #elif defined _WIN32 || defined _WIN64
   if (Color_fore!=clr)
   {
-	SetConsoleTextAttribute(hConsole, Color_fore=clr);
+  SetConsoleTextAttribute(hConsole, Color_fore=clr);
   }
   fputs(input, stdout);
   #endif
 }
 
+static inline uint ConvertToReal(const char *str)
+{
+	#ifdef _DEBUG
+	if (!str)
+	{
+		fprintf(stderr, "NULL pointer !\n");
+		return 0;
+	}
+	#endif
+	uint result=0;
+	if ((*str)>48 && (*str < 58))
+	{
+		result+=(*(str++))-48;
+	}
+	else
+	{
+		errno=EILSEQ;
+		return 0;
+	}
+	while (*str)
+	{
+		if ((*str)>47 && (*str < 58))
+		{
+			result=result*10+(*str++)-48;
+			continue;
+		}
+		errno=EILSEQ;
+		return 0;
+	}
+	return result;
+}
+
 static inline bool Compare(const char *str1,const char *str2)
 {
   while ( *str1 == *str2 ) {
-		if (!( *(str1++) | *(str2++) ) )
-			return true;
-	}
-	return false;
+  if (!( *(str1++) | *(str2++) ) )
+  return true;
+  }
+  return false;
 }
 
 static inline void ToReal(uchar in, uchar *out)
 {
-	if (in>0)
-	{
-		*(out+2)=(in%10)+48;
-		in/=10;
-		if (in>0)
-		{
-			*(out+1)=(in%10)+48;
-			in/=10;
-			if (in>0)
-			{
-				*(out)=(in%10)+48;
-				return;
-			}
-			*(out)=' ';
-			return;
-		}
-		*(out+1)=' ';
-		*(out)=' ';
-		return;
-	}
-	*(out+2)='0';
-	*(out+1)=' ';
-	*(out)=' ';
+  if (in>0)
+  {
+  *(out+2)=(in%10)+48;
+  in/=10;
+  if (in>0)
+  {
+  *(out+1)=(in%10)+48;
+  in/=10;
+  if (in>0)
+  {
+  *(out)=(in%10)+48;
+  return;
+  }
+  *(out)=' ';
+  return;
+  }
+  *(out+1)=' ';
+  *(out)=' ';
+  return;
+  }
+  *(out+2)='0';
+  *(out+1)=' ';
+  *(out)=' ';
 }
 
 static inline void ToChar(uchar in, uchar *out)
@@ -638,6 +681,5 @@ void ReadDisplayFile(const char *filename)
     printf("^ %s, %ld ^\n", filename, size);
   else
     printf("\n^ %s, %ld ^\n", filename, size);
-
   fclose(pFile);
 }
