@@ -26,7 +26,7 @@
 #define _CREATOR "Mohammad Amin Khakzadan"
 #define _CREATOR_GMAIL "mak12776@gmail.com"
 #define USAGE "Usage: %s [Option] [mode] file [file1] [fil2] [file3]\n"
-  #define HELP_DOC "\
+#define HELP_DOC "\
 Options:\n\
   -help                                     show this help and exit\n\
   -n [number], -column-number [number]      specify number of output columns\n\
