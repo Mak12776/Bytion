@@ -83,15 +83,25 @@ Options:\n\
 #define COL_BLUE 1
 #define COL_MAGENTA 5
 #define COL_CYAN 3
-#define COL_WHITE 7
-#define COL_DEFAULT 8
+#define COL_WHITE 15
+#define COL_GRAY 8
+#define COL_DEFAULT 7
 #endif
 
+#ifdef __linux__ // linux color setting
+
+#define COLOR_DEFAULT COL_DEFAULT
 #define COLOR_CHAR COL_YELLOW
 #define COLOR_ZERO COL_WHITE
-#define COLOR_DEFAULT COL_DEFAULT
-#if defined _WIN32 || defined _WIN64
-#define COLOR_ENV
+
+#define COLOR_ENV COLOR_DEFAULT
+#elif defined _WIN32 || defined _WIN64 //windows color setting
+
+#define COLOR_DEFAULT COL_GRAY
+#define COLOR_CHAR COL_YELLOW
+#define COLOR_ZERO COL_DEFAULT
+
+#define COLOR_ENV COL_DEFAULT
 #endif
 
 #define MODE_NOTHING 0
@@ -122,7 +132,7 @@ int Work_number=1;
 char selected_option=0;
 program_mode_t program_mode=MODE_NOTHING;
 arg_number_list_t *arg_number_list=NULL;
-char Color_fore=COL_DEFAULT;
+char Color_fore=COLOR_ENV;
 uint NoColumn=DEF_NOC;
 #if defined _WIN32 || defined _WIN64
 HANDLE hConsole;
@@ -138,7 +148,7 @@ int main(int argc, char const *argv[])
 
   #if defined _WIN32 || defined _WIN64
   hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-  SetConsoleTextAttribute(hConsole, Color_fore=COLOR_DEFAULT);
+  // SetConsoleTextAttribute(hConsole, Color_fore=COLOR_ENV);
   #endif
 
   if (argc == 1)
@@ -297,9 +307,6 @@ int main(int argc, char const *argv[])
     printf(_ERR_ MISS_OPR HELP_ERR, argv[0]);
     return EBADMSG;
   }
-  #if defined _WIN32 || defined _WIN64
-    SetConsoleTextAttribute(hConsole, COLOR_ENV);
-  #endif
   return 0;
 }
 
@@ -484,7 +491,6 @@ void ReadDisplayStrings(const char *filename)
     else
       str=0;
   }
-  SetColor(COL_DEFAULT);
   printf("^ %s, %ld ^\n", filename, size);
   free(buffer);
 }
@@ -690,7 +696,7 @@ void ReadDisplayFile(const char *filename)
     break;
   }
 
-  SetColor(COLOR_DEFAULT);
+  SetColor(COLOR_ENV);
   if (NoC==NoColumn)
     printf("^ %s, %ld ^\n", filename, size);
   else
