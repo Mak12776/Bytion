@@ -22,11 +22,11 @@
 #define EILSEQ 84
 #endif
 
-#define _VERSION "0.12"
+#define _VERSION "0.120.1"
 #define _CREATOR "Mohammad Amin Khakzadan"
 #define _CREATOR_GMAIL "mak12776@gmail.com"
-#define USAGE "Usage: %s [Option] [mode] file [file1] [fil2] [file3]\n"
-  #define HELP_DOC "\
+#define USAGE "Usage: %s [Option] [mode] file [file1] [file2] [file3] ...\n"
+#define HELP_DOC "\
 Options:\n\
   -help                                     show this help and exit\n\
   -n [number], -column-number [number]      specify number of output columns\n\
@@ -48,7 +48,7 @@ Options:\n\
 #define INVALID_NUMBER "invalid number: %s\n"
 #define DUPLICATE_OPT "duplicate option\n"
 #define MEMORY_ERR "can't allocate memory\n"
-#define MISS_OPR "missing operand\n"
+#define MISS_OPR "missing file operand\n"
 #define MISS_OPT "missing option\n"
 #define USE_DEFAULT_MODE "restoring default mode.\n"
 
@@ -66,6 +66,7 @@ Options:\n\
 #define COMM_FIND 3
 
 #ifdef __linux__
+#define COL_BLACK 30
 #define COL_RED 31
 #define COL_GREEN 32
 #define COL_YELLOW 33
@@ -75,13 +76,15 @@ Options:\n\
 #define COL_WHITE 37
 #define COL_DEFAULT 39
 #elif defined _WIN32 || defined _WIN64
-#define COL_BLUE 9
-#define COL_GREEN 10
-#define COL_CYAN 11
-#define COL_RED 12
-#define COL_MAGENTA 13
-#define COL_YELLOW 14
+#define COL_BLACK 0
+#define COL_RED 4
+#define COL_GREEN 2
+#define COL_YELLOW 6
+#define COL_BLUE 1
+#define COL_MAGENTA 5
+#define COL_CYAN 3
 #define COL_WHITE 15
+#define COL_GRAY 8
 #define COL_DEFAULT 7
 #endif
 
@@ -94,9 +97,9 @@ Options:\n\
 #define COLOR_ENV COLOR_DEFAULT
 #elif defined _WIN32 || defined _WIN64 //windows color setting
 
-#define COLOR_DEFAULT COL_DEFAULT
+#define COLOR_DEFAULT COL_GRAY
 #define COLOR_CHAR COL_YELLOW
-#define COLOR_ZERO COL_WHITE
+#define COLOR_ZERO COL_DEFAULT
 
 #define COLOR_ENV COL_DEFAULT
 #endif
