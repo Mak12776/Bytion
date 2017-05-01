@@ -40,6 +40,7 @@ Options:\n\
       d                                     show bytes in decimal.\n\
   -ds, -display-strings                     read files and write only strings on stdout\n\
   -f [pattern], -find [pattern]             find hex pattern in files (under construction)\n\
+	-v, -version                              show version & creator\n\
 "
 #define HELP_ERR "try %s -help for more information\n"
 #define _ERR_ "error: "
@@ -234,7 +235,7 @@ int main(int argc, char const *argv[])
         }
         continue;
       }
-      if (Compare(argv[check_index]+1, "v") || Compare(argv[check_index]+1, "version")) //no-mode
+      if (Compare(argv[check_index]+1, "v") || Compare(argv[check_index]+1, "version")) //version
       {
         printf("Bytion v" _VERSION "\nby " _CREATOR ", " _CREATOR_GMAIL "\n");
         return 0;
