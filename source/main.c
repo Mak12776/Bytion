@@ -40,7 +40,7 @@ Options:\n\
       d                                     show bytes in decimal.\n\
   -ds, -display-strings                     read files and write only strings on stdout\n\
   -f [pattern], -find [pattern]             find hex pattern in files (under construction)\n\
-	-v, -version                              show version & creator\n\
+  -v, -version                              show version & creator\n\
 "
 #define HELP_ERR "try %s -help for more information\n"
 #define _ERR_ "error: "
@@ -348,34 +348,34 @@ static inline void printColored(const char *input, const char clr)
 
 static inline uint ConvertToReal(const char *str)
 {
-	#ifdef _DEBUG
-	if (!str)
-	{
-		fprintf(stderr, "NULL pointer !\n");
-		return 0;
-	}
-	#endif
-	uint result=0;
-	if ((*str)>48 && (*str < 58))
-	{
-		result+=(*(str++))-48;
-	}
-	else
-	{
-		errno=EILSEQ;
-		return 0;
-	}
-	while (*str)
-	{
-		if ((*str)>47 && (*str < 58))
-		{
-			result=result*10+(*str++)-48;
-			continue;
-		}
-		errno=EILSEQ;
-		return 0;
-	}
-	return result;
+  #ifdef _DEBUG
+  if (!str)
+  {
+    fprintf(stderr, "NULL pointer !\n");
+    return 0;
+  }
+  #endif
+  uint result=0;
+  if ((*str)>48 && (*str < 58))
+  {
+    result+=(*(str++))-48;
+  }
+  else
+  {
+    errno=EILSEQ;
+    return 0;
+  }
+  while (*str)
+  {
+    if ((*str)>47 && (*str < 58))
+    {
+      result=result*10+(*str++)-48;
+      continue;
+    }
+    errno=EILSEQ;
+    return 0;
+  }
+  return result;
 }
 
 static inline bool Compare(const char *str1,const char *str2)
