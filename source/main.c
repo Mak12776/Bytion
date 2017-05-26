@@ -1,14 +1,7 @@
 // #define _DEBUG
 
-#ifdef _DEBUG
-#define LOGV(t,x) printf("Log; %d: ", __LINE__);printf( #x ": %" #t "\n", x);
-#define LOG(...) printf("Log; %d: ", __LINE__);printf(__VA_ARGS__);
-#define LOGN(x) printf("Log; %d: ", __LINE__);printf( x "\n");
-#else
-#define LOGV(t,x)
-#define LOG(...)
-#define LOGN(x)
-#endif
+#define _DEBUG
+#include "debug.h"
 
 #include <stdio.h>
 #include <stdlib.h>
