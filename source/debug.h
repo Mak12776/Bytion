@@ -2,6 +2,8 @@
 #ifndef _DEBUG_HEADER_
 #define _DEBUG_HEADER_
 
+#include <stdio.h>
+
 #ifdef _DEBUG
 #define LOGV(t,x) printf("Log; %d: ", __LINE__);printf( #x ": %" #t "\n", x);
 #define LOG(...) printf("Log; %d: ", __LINE__);printf(__VA_ARGS__);

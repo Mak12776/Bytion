@@ -1,7 +1,7 @@
-// #define _DEBUG
 
-#define _DEBUG
-#include "debug.h"
+#define _VERSION "0.120.1"
+#define _CREATOR "Mohammad Amin Khakzadan"
+#define _CREATOR_GMAIL "mak12776@gmail.com"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,13 +11,20 @@
 #include <errno.h>
 #elif defined _WIN32 || defined _WIN64
 #include <windows.h>
-#define EBADMSG 74;
+#define EBADMSG 74
 #define EILSEQ 84
 #endif
 
-#define _VERSION "0.120.1"
-#define _CREATOR "Mohammad Amin Khakzadan"
-#define _CREATOR_GMAIL "mak12776@gmail.com"
+#include "debug.h"
+#include "inc/terminal_color.h"
+
+/*
+* Debug tools:
+* LOGV(t, x) show value x of type t
+* LOG(...)   printf(...)
+* LOGN(x)    printf(x "\n")
+*/
+
 #define USAGE "Usage: %s [Option] [mode] file [file1] [file2] [file3] ...\n"
 #define HELP_DOC "\
 Options:\n\
@@ -59,45 +66,6 @@ Options:\n\
 #define COMM_DISPLAY_STRING 2
 #define COMM_FIND 3
 
-#ifdef __linux__
-#define COL_BLACK 30
-#define COL_RED 31
-#define COL_GREEN 32
-#define COL_YELLOW 33
-#define COL_BLUE 34
-#define COL_MAGENTA 35
-#define COL_CYAN 36
-#define COL_WHITE 37
-#define COL_DEFAULT 39
-#elif defined _WIN32 || defined _WIN64
-#define COL_BLACK 0
-#define COL_RED 4
-#define COL_GREEN 2
-#define COL_YELLOW 6
-#define COL_BLUE 1
-#define COL_MAGENTA 5
-#define COL_CYAN 3
-#define COL_WHITE 15
-#define COL_GRAY 8
-#define COL_DEFAULT 7
-#endif
-
-#ifdef __linux__ // linux color setting
-
-#define COLOR_DEFAULT COL_DEFAULT
-#define COLOR_CHAR COL_YELLOW
-#define COLOR_ZERO COL_WHITE
-
-#define COLOR_ENV COLOR_DEFAULT
-#elif defined _WIN32 || defined _WIN64 //windows color setting
-
-#define COLOR_DEFAULT COL_GRAY
-#define COLOR_CHAR COL_YELLOW
-#define COLOR_ZERO COL_DEFAULT
-
-#define COLOR_ENV COL_DEFAULT
-#endif
-
 #define MODE_NOTHING 0
 #define MODE_COLOR  0b001
 #define MODE_CHAR   0b010
@@ -113,20 +81,19 @@ typedef int arg_number_list_t;
 void ReadDisplayFile(const char *filename);
 void ReadDisplayStrings(const char *filename);
 
-static inline void SetColor(const char clr);
 static inline bool Compare(const char *str1,const char *str2);
 static inline uint ConvertToReal(const char *str);
 static inline void ToReal(uchar in, uchar *out);
 static inline void ToHex(uchar in, uchar *out);
 static inline void ToChar(uchar in, uchar *out);
-static inline void printColored(const char *input, char clr);
 
 // variables
 int Work_number=1;
 char selected_option=0;
 program_mode_t program_mode=MODE_NOTHING;
 arg_number_list_t *arg_number_list=NULL;
-char Color_fore=COLOR_ENV;
+
+
 uint NoColumn=DEF_NOC;
 #if defined _WIN32 || defined _WIN64
 HANDLE hConsole;
@@ -302,41 +269,6 @@ int main(int argc, char const *argv[])
     return EBADMSG;
   }
   return 0;
-}
-
-static inline void SetColor(const char clr)
-{
-  #ifdef __linux__
-  if (Color_fore!=clr)
-  {
-    printf("\033[%dm", Color_fore=clr);
-  }
-  #elif defined _WIN32 || defined _WIN64
-  if (Color_fore!=clr)
-  {
-    SetConsoleTextAttribute(hConsole, Color_fore=clr);
-  }
-  #endif
-}
-
-static inline void printColored(const char *input, const char clr)
-{
-  #ifdef __linux__
-  if (Color_fore==clr)
-  {
-    fputs(input, stdout);
-  }
-  else
-  {
-    printf("\033[%dm%s", Color_fore=clr, input);
-  }
-  #elif defined _WIN32 || defined _WIN64
-  if (Color_fore!=clr)
-  {
-  SetConsoleTextAttribute(hConsole, Color_fore=clr);
-  }
-  fputs(input, stdout);
-  #endif
 }
 
 static inline uint ConvertToReal(const char *str)
@@ -564,7 +496,7 @@ void ReadDisplayFile(const char *filename)
           if (c==0)
             printColored(out, COLOR_ZERO);
           else
-            printColored(out, COLOR_DEFAULT);
+            printColored(out, COLOR_DEF_BYTE);
         }
         if (NoC>0)
         {
@@ -584,7 +516,7 @@ void ReadDisplayFile(const char *filename)
         if (c==0)
           printColored(out, COLOR_ZERO);
         else
-          printColored(out, COLOR_DEFAULT);
+          printColored(out, COLOR_DEF_BYTE);
         if (NoC>0)
         {
           NoC--;
@@ -612,7 +544,7 @@ void ReadDisplayFile(const char *filename)
           if (c==0)
             printColored(out, COLOR_ZERO);
           else
-            printColored(out, COLOR_DEFAULT);
+            printColored(out, COLOR_DEF_BYTE);
         }
         if (NoC>0)
         {
@@ -659,7 +591,7 @@ void ReadDisplayFile(const char *filename)
         if (c==0)
           printColored(out, COLOR_ZERO);
         else
-          printColored(out, COLOR_DEFAULT);
+          printColored(out, COLOR_DEF_BYTE);
         if (NoC>0)
         {
           NoC--;

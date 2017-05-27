@@ -1,0 +1,51 @@
+HELP="Usage: build [<options>]
+    clear               delete build binarys
+    check               check for compilation
+    debug               pass _DEBUG macro into code & compile"
+
+
+SRCS="main.c inc/terminal_color.o"
+
+function RegularBuild() {
+  gcc -O3 -o bytion $SRCS -Wextra
+  if [ $? -eq 0 ]; then
+    echo "---Build successfull---"
+  fi
+}
+
+function  DebugBuild() {
+  gcc -D_DEBUG -o bytion $SRCS -Wextra
+  if [ $? -eq 0 ]; then
+    echo "---Debug build successfull---"
+  fi
+}
+
+function CheckBuild() {
+  gcc -o temp.check.build $SRCS -Wextra
+  if [ $? -eq 0 ]; then
+    echo "---Build check successfull---"
+    rm temp.check.build
+  fi
+}
+
+if [ $# -eq 0 ]; then
+  RegularBuild
+elif [ $# -eq 1 ]; then
+  case "$1" in
+    debug)
+      DebugBuild
+      ;;
+    check)
+      CheckBuild
+      ;;
+    clear)
+      rm -i bytion
+      ;;
+    *)
+      echo "'$1' is not an option" $'\n'
+      echo $HELP
+      ;;
+  esac
+else
+  echo $HELP
+fi
