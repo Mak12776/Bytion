@@ -1,5 +1,4 @@
 
-#include <stdio.h>
 #include "terminal_color.h"
 
 char Color_fore=COLOR_ENV;

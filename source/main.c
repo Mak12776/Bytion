@@ -7,15 +7,16 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef __linux__
-#include <errno.h>
-#elif defined _WIN32 || defined _WIN64
+
+#if defined _WIN32 || defined _WIN64
 #include <windows.h>
-#define EBADMSG 74
-#define EILSEQ 84
 #endif
 
 #include "debug.h"
+#include "inc/boolean.h"
+#include "inc/units.h"
+#include "inc/misc.h"
+#include "inc/error_numbers.h"
 #include "inc/terminal_color.h"
 
 /*
@@ -53,10 +54,7 @@ Options:\n\
 #define MISS_OPT "missing option\n"
 #define USE_DEFAULT_MODE "restoring default mode.\n"
 
-#define true 1
-#define false 0
-
-#define DEF_NOC 15
+#define DEFAULT_NUMBER_OF_COLOMNS 15
 
 #define enum_type_file 1
 #define enum_type_mode 2
@@ -71,21 +69,12 @@ Options:\n\
 #define MODE_CHAR   0b010
 #define MODE_NUMBER 0b100
 
-typedef unsigned int uint;
-typedef unsigned char uchar;
 typedef char program_mode_t;
-typedef char bool;
 typedef int arg_number_list_t;
 
 // function declaration
 void ReadDisplayFile(const char *filename);
 void ReadDisplayStrings(const char *filename);
-
-static inline bool Compare(const char *str1,const char *str2);
-static inline uint ConvertToReal(const char *str);
-static inline void ToReal(uchar in, uchar *out);
-static inline void ToHex(uchar in, uchar *out);
-static inline void ToChar(uchar in, uchar *out);
 
 // variables
 int Work_number=1;
@@ -93,8 +82,7 @@ char selected_option=0;
 program_mode_t program_mode=MODE_NOTHING;
 arg_number_list_t *arg_number_list=NULL;
 
-
-uint NoColumn=DEF_NOC;
+uint NoColumn=DEFAULT_NUMBER_OF_COLOMNS;
 #if defined _WIN32 || defined _WIN64
 HANDLE hConsole;
 #endif
@@ -269,100 +257,6 @@ int main(int argc, char const *argv[])
     return EBADMSG;
   }
   return 0;
-}
-
-static inline uint ConvertToReal(const char *str)
-{
-  #ifdef _DEBUG
-  if (!str)
-  {
-    fprintf(stderr, "NULL pointer !\n");
-    return 0;
-  }
-  #endif
-  uint result=0;
-  if ((*str)>48 && (*str < 58))
-  {
-    result+=(*(str++))-48;
-  }
-  else
-  {
-    errno=EILSEQ;
-    return 0;
-  }
-  while (*str)
-  {
-    if ((*str)>47 && (*str < 58))
-    {
-      result=result*10+(*str++)-48;
-      continue;
-    }
-    errno=EILSEQ;
-    return 0;
-  }
-  return result;
-}
-
-static inline bool Compare(const char *str1,const char *str2)
-{
-  while ( *str1 == *str2 ) {
-  if (!( *(str1++) | *(str2++) ) )
-  return true;
-  }
-  return false;
-}
-
-static inline void ToReal(uchar in, uchar *out)
-{
-  if (in>0)
-  {
-  *(out+2)=(in%10)+48;
-  in/=10;
-  if (in>0)
-  {
-  *(out+1)=(in%10)+48;
-  in/=10;
-  if (in>0)
-  {
-  *(out)=(in%10)+48;
-  return;
-  }
-  *(out)=' ';
-  return;
-  }
-  *(out+1)=' ';
-  *(out)=' ';
-  return;
-  }
-  *(out+2)='0';
-  *(out+1)=' ';
-  *(out)=' ';
-}
-
-static inline void ToChar(uchar in, uchar *out)
-{
-  *(out)=in;
-  *(out+1)=' ';
-}
-
-static inline void ToHex(uchar in, uchar *out)
-{
-  if ((in/16)<10)
-  {
-    *out=in/16+48;
-  }
-  else
-  {
-    *out=in/16+55;
-  }
-  if ((in%16)<10)
-  {
-    *(out+1)=in%16+48;
-  }
-  else
-  {
-    *(out+1)=in%16+55;
-  }
 }
 
 void ReadDisplayStrings(const char *filename)

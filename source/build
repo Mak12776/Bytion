@@ -1,10 +1,9 @@
+SRCS="main.c inc/terminal_color.o inc/misc.o"
+
 HELP="Usage: build [<options>]
     clear               delete build binarys
     check               check for compilation
     debug               pass _DEBUG macro into code & compile"
-
-
-SRCS="main.c inc/terminal_color.o"
 
 function RegularBuild() {
   gcc -O3 -o bytion $SRCS -Wextra
