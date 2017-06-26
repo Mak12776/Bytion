@@ -1,5 +1,3 @@
-#ifndef _COLOR_SETTING_INLINE_FUNCTION_H_
-#define _COLOR_SETTING_INLINE_FUNCTION_H_
 
 #include <stdio.h>
 
@@ -39,5 +37,3 @@ inline void printColored(const char *input, const char clr)
   fputs(input, stdout);
   #endif
 }
-
-#endif

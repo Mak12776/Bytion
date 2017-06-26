@@ -1,9 +1,11 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include "display.h"
-#include "inline_misc.h"
-
-typedef char program_mode_t;
-typedef int arg_number_list_t;
+#include "err_messages.h"
+#include "term_color_mac.h"
+#include "inline/term_color.h"
+#include "inline/misc.h"
 
 extern int Work_number;
 extern uint NoColumn;

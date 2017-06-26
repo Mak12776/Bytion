@@ -1,6 +1,13 @@
 
 #include <stdio.h>
-#include "error_numbers.h"
+#include "../error_numbers.h"
+#include "../units.h"
+
+/*
+  this functions must be inline for performance,
+  so include them in any object file alone.(also
+  use -O3 on gcc)
+*/
 
 inline uint ConvertToReal(const char *str)
 {

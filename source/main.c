@@ -7,18 +7,19 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include "debug.h"
+#include "inc/units.h"
+#include "inc/err_messages.h"
+#include "inc/error_numbers.h"
+#include "inc/term_color_mac.h"
+
+#include "inc/display.h"
+
+#include "inc/inline/misc.h"
 
 #if defined _WIN32 || defined _WIN64
 #include <windows.h>
 #endif
-
-#include "debug.h"
-#include "inc/units.h"
-#include "inc/inline_misc.h"
-#include "inc/error_numbers.h"
-#include "inc/error_macros.h"
-
-#include "inc/display.h"
 
 /*
 * Debug tools:
@@ -96,7 +97,7 @@ int main(int argc, char const *argv[])
   if (!arg_number_list)
   {
     printf(_ERR_ MEMORY_ERR);
-    return 255;
+    return 1;
   }
 
   // get infromation
@@ -224,11 +225,11 @@ int main(int argc, char const *argv[])
           default:
             printf(_ERR_ INVALID_MODE USE_DEFAULT_MODE, argv[check_index+1]);
             program_mode = MODE_NOTHING;
-            goto Continue;
+            goto OuterContinue;
           break;
         }
       }
-      Continue:
+      OuterContinue:
       continue;
     }
     if (arg_number_list[check_index]==enum_type_no_mode)

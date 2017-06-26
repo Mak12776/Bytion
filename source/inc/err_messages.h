@@ -1,5 +1,5 @@
-#ifndef _ERROR_MACROS_H_
-#define _ERROR_MACROS_H_
+#ifndef _ERR_MESSAGES_H_
+#define _ERR_MESSAGES_H_
 
 #define HELP_ERR "try %s -help for more information\n"
 #define _ERR_ "error: "
