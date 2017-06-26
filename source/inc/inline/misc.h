@@ -1,7 +1,8 @@
 
 #include <stdio.h>
-#include "../error_numbers.h"
+#include <errno.h>
 #include "../units.h"
+#define MISC_ERR_BADINPUT 1
 
 /*
   this functions must be inline for performance,
@@ -25,7 +26,7 @@ inline uint ConvertToReal(const char *str)
   }
   else
   {
-    errno=EILSEQ;
+    errno=MISC_ERR_BADINPUT;
     return 0;
   }
   while (*str)
@@ -35,7 +36,7 @@ inline uint ConvertToReal(const char *str)
       result=result*10+(*str++)-48;
       continue;
     }
-    errno=EILSEQ;
+    errno=MISC_ERR_BADINPUT;
     return 0;
   }
   return result;

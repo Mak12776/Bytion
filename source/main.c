@@ -10,7 +10,6 @@
 #include "debug.h"
 #include "inc/units.h"
 #include "inc/err_messages.h"
-#include "inc/error_numbers.h"
 #include "inc/term_color_mac.h"
 
 #include "inc/display.h"
@@ -96,7 +95,7 @@ int main(int argc, char const *argv[])
   arg_number_list=calloc(argc-1, sizeof(arg_number_list_t));
   if (!arg_number_list)
   {
-    printf(_ERR_ MEMORY_ERR);
+    fprintf(stderr, _ERR_ MEMORY_ERR);
     return 1;
   }
 
@@ -114,8 +113,8 @@ int main(int argc, char const *argv[])
       {
         if (selected_option)
         {
-          printf(_ERR_ DUPLICATE_OPT HELP_ERR, argv[0]);
-          return EBADMSG;
+          fprintf(stderr, _ERR_ DUPLICATE_OPT HELP_ERR, argv[0]);
+          return 1;
         }
         else
         {
@@ -127,8 +126,8 @@ int main(int argc, char const *argv[])
       {
         if (selected_option)
         {
-          printf(_ERR_ DUPLICATE_OPT HELP_ERR, argv[0]);
-          return EBADMSG;
+          fprintf(stderr, _ERR_ DUPLICATE_OPT HELP_ERR, argv[0]);
+          return 1;
         }
         else
         {
@@ -140,8 +139,8 @@ int main(int argc, char const *argv[])
       {
         if (selected_option)
         {
-          printf(_ERR_ DUPLICATE_OPT HELP_ERR, argv[0]);
-          return EBADMSG;
+          fprintf(stderr, _ERR_ DUPLICATE_OPT HELP_ERR, argv[0]);
+          return 1;
         }
         else
         {
@@ -165,8 +164,8 @@ int main(int argc, char const *argv[])
         NoColumn=ConvertToReal(argv[++check_index]);
         if (errno)
         {
-          printf(_ERR_ INVALID_NUMBER, argv[check_index]);
-          return EBADMSG;
+          fprintf(stderr, _ERR_ INVALID_NUMBER, argv[check_index]);
+          return 1;
         }
         continue;
       }
@@ -175,8 +174,8 @@ int main(int argc, char const *argv[])
         printf("Bytion v" _VERSION "\nby " _CREATOR ", " _CREATOR_GMAIL "\n");
         return 0;
       }
-      printf(_ERR_ INVALID_COM HELP_ERR, argv[check_index], argv[0]);
-      return EBADMSG;
+      fprintf(stderr, _ERR_ INVALID_COM HELP_ERR, argv[check_index], argv[0]);
+      return 1;
       }
     else
     {
@@ -186,14 +185,14 @@ int main(int argc, char const *argv[])
 
   if (!selected_option)
   {
-    printf(_ERR_ MISS_OPT HELP_ERR, argv[0]);
-    return EBADMSG;
+    fprintf(stderr, _ERR_ MISS_OPT HELP_ERR, argv[0]);
+    return 1;
   }
 
   //process
   for (check_index=0; check_index<argc-1; ++check_index)
   {
-    if (arg_number_list[check_index]==enum_type_file)
+    if (arg_number_list[check_index]==enum_type_file) // check for files
     {
       switch (selected_option) {
         case COMM_DISPLAY:
@@ -206,7 +205,7 @@ int main(int argc, char const *argv[])
       Work_number++;
       continue;
     }
-    if (arg_number_list[check_index]==enum_type_mode)
+    if (arg_number_list[check_index]==enum_type_mode) // check for mode command
     {
       program_mode=MODE_NOTHING;
       for (register char *check_char=(char *)argv[check_index+1]; *(check_char); check_char++)
@@ -223,7 +222,7 @@ int main(int argc, char const *argv[])
             program_mode |= MODE_NUMBER;
           break;
           default:
-            printf(_ERR_ INVALID_MODE USE_DEFAULT_MODE, argv[check_index+1]);
+            fprintf(stderr, _ERR_ INVALID_MODE USE_DEFAULT_MODE, argv[check_index+1]);
             program_mode = MODE_NOTHING;
             goto OuterContinue;
           break;
@@ -240,8 +239,8 @@ int main(int argc, char const *argv[])
   }
   if (Work_number==1)
   {
-    printf(_ERR_ MISS_OPR HELP_ERR, argv[0]);
-    return EBADMSG;
+    fprintf(stderr, _ERR_ MISS_OPR HELP_ERR, argv[0]);
+    return 1;
   }
   return 0;
 }

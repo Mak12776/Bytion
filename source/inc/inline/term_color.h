@@ -1,4 +1,8 @@
 
+#if __APPLE__ || __MACH__
+#error incompatible with Mac OSX
+#endif
+
 #include <stdio.h>
 
 extern char _terminal_color_fore;

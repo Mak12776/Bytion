@@ -10,6 +10,6 @@
 #define MEMORY_ERR "can't allocate memory\n"
 #define MISS_OPR "missing file operand\n"
 #define MISS_OPT "missing option\n"
-#define USE_DEFAULT_MODE "restoring default mode.\n"
+#define USE_DEFAULT_MODE "reseting to default mode.\n"
 
 #endif
