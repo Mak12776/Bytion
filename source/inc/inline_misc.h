@@ -1,13 +1,8 @@
 
-#ifndef _BYTION_MISC_H_
-#define _BYTION_MISC_H_
-
 #include <stdio.h>
-#include "units.h"
-#include "boolean.h"
 #include "error_numbers.h"
 
-extern inline uint ConvertToReal(const char *str)
+inline uint ConvertToReal(const char *str)
 {
   #ifdef _DEBUG
   if (!str)
@@ -39,7 +34,7 @@ extern inline uint ConvertToReal(const char *str)
   return result;
 }
 
-extern inline bool Compare(const char *str1,const char *str2)
+inline bool Compare(const char *str1,const char *str2)
 {
   #ifdef _DEBUG
   if ((!str1) || (!str2))
@@ -56,7 +51,7 @@ extern inline bool Compare(const char *str1,const char *str2)
   return false;
 }
 
-extern inline inline void ToReal(uchar in, uchar *out)
+inline inline void ToReal(uchar in, uchar *out)
 {
   if (in>0)
   {
@@ -83,13 +78,13 @@ extern inline inline void ToReal(uchar in, uchar *out)
   *(out)=' ';
 }
 
-extern inline void ToChar(uchar in, uchar *out)
+inline void ToChar(uchar in, uchar *out)
 {
   *(out)=in;
   *(out+1)=' ';
 }
 
-extern inline void ToHex(uchar in, uchar *out)
+inline void ToHex(uchar in, uchar *out)
 {
   if ((in/16)<10)
   {
@@ -108,5 +103,3 @@ extern inline void ToHex(uchar in, uchar *out)
     *(out+1)=in%16+55;
   }
 }
-
-#endif

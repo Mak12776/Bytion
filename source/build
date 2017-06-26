@@ -1,7 +1,10 @@
 MAIN="main.c"
-SRCS=( )
-ALLINC=""
+SRCS=(display)
+OBJS=( )
 
+for i in ${!SRCS[*]}; do
+  OBJS[i]="objs/${SRCS[i]}.o";
+done;
 
 HELP="Usage: build [<options>] \n
     clear ---------- delete build binarys\n
@@ -12,7 +15,7 @@ HELP="Usage: build [<options>] \n
 function BuildIncludes() {
   for name in ${SRCS[@]}; do
     echo "---Building $name---"
-    gcc -O3 -c inc/$name.c -o ./objs/$name.o
+    gcc $@ -c inc/$name.c -o ./objs/$name.o
     if [ $? -ne 0 ]; then
       echo "---Building $name Failed---"
       exit 1
@@ -21,29 +24,22 @@ function BuildIncludes() {
 }
 
 function RegularBuild() {
-  BuildIncludes
+  BuildIncludes -O3
   if [ $? -ne 0 ]; then
     exit 1
   fi
   echo "---Building Bytion---"
-  gcc -O3 -o bytion $MAIN
+  gcc -O3 -o bytion $MAIN ${OBJS[*]}
   if [ $? -eq 0 ]; then
     echo "---Build successfull---"
   fi
 }
 
 function  DebugBuild() {
-  gcc -D_DEBUG -o bytion $MAIN $ALLINC -Wextra
+  BuildIncludes -O3 -D_DEBUG
+  gcc -O3 -D_DEBUG -o bytion $MAIN ${OBJS[*]} -Wextra
   if [ $? -eq 0 ]; then
-    echo "---Debug build successfull---"
-  fi
-}
-
-function CheckBuild() {
-  gcc -o temp.check.build $MAIN $ALLINC -Wextra
-  if [ $? -eq 0 ]; then
-    echo "---Build check successfull---"
-    rm temp.check.build
+    echo "---Debug Build Successfull---"
   fi
 }
 
@@ -53,9 +49,6 @@ elif [ $# -eq 1 ]; then
   case "$1" in
     debug)
       DebugBuild
-      ;;
-    check)
-      CheckBuild
       ;;
     clear)
       rm -i bytion
