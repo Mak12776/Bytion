@@ -13,6 +13,7 @@
 #include "inc/term_color_mac.h"
 
 #include "inc/display.h"
+#include "inc/dump.h"
 
 #include "inc/inline/misc.h"
 
@@ -27,7 +28,7 @@
 * LOGN(x)    printf(x "\n")
 */
 
-#define USAGE "Usage: %s [Option] [mode] file [file1] [file2] [file3] ...\n"
+#define USAGE "Usage: %s [Option] file [file1] [file2] [file3] ...\n"
 #define HELP_DOC "\
 Options:\n\
   -help                                     show this help and exit\n\
@@ -36,13 +37,15 @@ Options:\n\
                                             modes can be a string of letters\n\
   -nm, -no-mode                             restore to default mode\n\
   -d, -display                              read files and write them on stdout\n\
-    Modes:                                  default mode: nothing\n\
-      c                                     colorful.\n\
-      l                                     show ascii letters.\n\
-      d                                     show bytes in decimal.\n\
   -ds, -display-strings                     read files and write only strings on stdout\n\
+  -dm, -dump                                dump file byte into stdout\n\
   -f [pattern], -find [pattern]             find pattern in files (under construction)\n\
   -v, -version                              show version & creator\n\
+Modes:\n\
+  for display:                              default mode: nothing\n\
+  c                                         colorful.\n\
+  l                                         show ascii letters.\n\
+  d                                         show bytes in decimal.\n\
 "
 
 #define DEFAULT_NUMBER_OF_COLOMNS 15
@@ -53,7 +56,8 @@ Options:\n\
 
 #define COMM_DISPLAY 1
 #define COMM_DISPLAY_STRING 2
-#define COMM_FIND 3
+#define COMM_DUMP_FILE 3
+#define COMM_FIND 4
 
 #define MODE_NOTHING 0
 #define MODE_COLOR  0b001
@@ -135,6 +139,19 @@ int main(int argc, char const *argv[])
           continue;
         }
       }
+      if (Compare(argv[check_index]+1, "dm") || Compare(argv[check_index]+1, "dump")) // dump
+      {
+        if (selected_option)
+        {
+          fprintf(stderr, _ERR_ DUPLICATE_OPT HELP_ERR, argv[0]);
+          return 1;
+        }
+        else
+        {
+          selected_option=COMM_DUMP_FILE;
+          continue;
+        }
+      }
       if (Compare(argv[check_index]+1, "f") || Compare(argv[check_index]+1, "find")) //find
       {
         if (selected_option)
@@ -201,31 +218,38 @@ int main(int argc, char const *argv[])
         case COMM_DISPLAY_STRING:
           ReadDisplayStrings(argv[check_index+1]);
         break;
+        case COMM_DUMP_FILE:
+          LOGN("I will dump");
+          DumpFile(argv[check_index+1]);
+        break;
       }
       Work_number++;
       continue;
     }
     if (arg_number_list[check_index]==enum_type_mode) // check for mode command
     {
-      program_mode=MODE_NOTHING;
-      for (register char *check_char=(char *)argv[check_index+1]; *(check_char); check_char++)
+      if (selected_option==COMM_DISPLAY)
       {
-        switch (*check_char)
+        program_mode=MODE_NOTHING;
+        for (register char *check_char=(char *)argv[check_index+1]; *(check_char); check_char++)
         {
-          case 'c':
-            program_mode |= MODE_COLOR;
-          break;
-          case 'l':
-            program_mode |= MODE_CHAR;
-          break;
-          case 'd':
-            program_mode |= MODE_NUMBER;
-          break;
-          default:
-            fprintf(stderr, _ERR_ INVALID_MODE USE_DEFAULT_MODE, argv[check_index+1]);
-            program_mode = MODE_NOTHING;
-            goto OuterContinue;
-          break;
+          switch (*check_char)
+          {
+            case 'c':
+              program_mode |= MODE_COLOR;
+            break;
+            case 'l':
+              program_mode |= MODE_CHAR;
+            break;
+            case 'd':
+              program_mode |= MODE_NUMBER;
+            break;
+            default:
+              fprintf(stderr, _ERR_ INVALID_MODE USE_DEFAULT_MODE, argv[check_index+1]);
+              program_mode = MODE_NOTHING;
+              goto OuterContinue;
+            break;
+          }
         }
       }
       OuterContinue:
@@ -237,10 +261,12 @@ int main(int argc, char const *argv[])
       continue;
     }
   }
+
   if (Work_number==1)
   {
-    fprintf(stderr, _ERR_ MISS_OPR HELP_ERR, argv[0]);
+    fprintf(stderr, _ERR_ MISS_FILE HELP_ERR, argv[0]);
     return 1;
   }
+
   return 0;
 }

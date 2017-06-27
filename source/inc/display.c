@@ -21,7 +21,7 @@ void ReadDisplayStrings(const char *filename)
 
   if (!pFile)
   {
-    printf(_ERR_ "in opening %s: %s\n", filename, strerror(errno));
+    fprintf(stderr, _ERR_ "in opening %s: %s\n", filename, strerror(errno));
     return;
   }
 
@@ -29,12 +29,14 @@ void ReadDisplayStrings(const char *filename)
   size=ftell(pFile);
   rewind(pFile);
   buffer=(uchar *)malloc(size);
+
   if (!buffer)
   {
     fclose(pFile);
-    printf(_ERR_ "in opening %s: " MEMORY_ERR, filename);
+    fprintf(stderr, _ERR_ "in opening %s: " MEMORY_ERR, filename);
     return;
   }
+
   printf("[%d]: %s, %ld\n", Work_number, filename, size);
 
   fread(buffer, 1, size, pFile);
@@ -63,6 +65,7 @@ void ReadDisplayStrings(const char *filename)
     else
       str=0;
   }
+
   printf("^ %s, %ld ^\n", filename, size);
   free(buffer);
 }
@@ -72,13 +75,13 @@ void ReadDisplayFile(const char *filename)
   FILE *pFile;
   long size;
   int c;
-  uchar out[5]={' ', ' ', ' ', 0, 0};
+  uchar out[6]={' ', ' ', ' ', 0, ' ', 0};
   uint NoC=NoColumn;
 
   pFile=fopen(filename, "rb");
   if (!pFile)
   {
-    printf(_ERR_ "in opening %s: %s\n", filename, strerror(errno));
+    fprintf(stderr, _ERR_ "in opening %s: %s\n", filename, strerror(errno));
     return;
   }
 
@@ -91,7 +94,7 @@ void ReadDisplayFile(const char *filename)
     case 0b000:
       while ((c=getc(pFile)) != EOF) // nothing
       {
-        ToHex(c, out);
+        ToHex_2Char(c, out);
         fputs(out, stdout);
         if (NoC>0)
         {
@@ -109,12 +112,12 @@ void ReadDisplayFile(const char *filename)
       {
         if (c>32 && c<127)
         {
-          ToChar(c, out);
+          ToChar_L2Char(c, out);
           fputs(out, stdout);
         }
         else
         {
-          ToHex(c, out);
+          ToHex_2Char(c, out);
           fputs(out, stdout);
         }
         if (NoC>0)
@@ -133,12 +136,12 @@ void ReadDisplayFile(const char *filename)
       {
         if (c>32 && c<127)
         {
-          ToChar(c, out);
+          ToChar_L2Char(c, out);
           printColored(out, COLOR_CHAR);
         }
         else
         {
-          ToHex(c, out);
+          ToHex_2Char(c, out);
           if (c==0)
             printColored(out, COLOR_ZERO);
           else
@@ -158,7 +161,7 @@ void ReadDisplayFile(const char *filename)
     case 0b001:
       while ((c=getc(pFile)) != EOF) // color
       {
-        ToHex(c, out);
+        ToHex_2Char(c, out);
         if (c==0)
           printColored(out, COLOR_ZERO);
         else
@@ -180,13 +183,12 @@ void ReadDisplayFile(const char *filename)
       {
         if (c>32 && c<127)
         {
-          *(out+2)=' ';
-          ToChar(c, out);
+          ToChar_R3Char(c, out);
           printColored(out, COLOR_CHAR);
         }
         else
         {
-          ToReal(c, out);
+          ToReal_3Char(c, out);
           if (c==0)
             printColored(out, COLOR_ZERO);
           else
@@ -209,13 +211,12 @@ void ReadDisplayFile(const char *filename)
       {
         if (c>32 && c<127)
         {
-          *(out+2)=' ';
-          ToChar(c, out);
+          ToChar_R3Char(c, out);
           fputs(out, stdout);
         }
         else
         {
-          ToReal(c, out);
+          ToReal_3Char(c, out);
           fputs(out, stdout);
         }
         if (NoC>0)
@@ -233,7 +234,7 @@ void ReadDisplayFile(const char *filename)
       *(out+3)=' ';
       while ((c=getc(pFile)) != EOF) // color, Real
       {
-        ToReal(c, out);
+        ToReal_3Char(c, out);
         if (c==0)
           printColored(out, COLOR_ZERO);
         else
@@ -253,7 +254,7 @@ void ReadDisplayFile(const char *filename)
       *(out+3)=' ';
       while ((c=getc(pFile)) != EOF) // Real
       {
-        ToReal(c, out);
+        ToReal_3Char(c, out);
         fputs(out, stdout);
         if (NoC>0)
         {

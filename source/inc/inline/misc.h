@@ -59,55 +59,53 @@ inline bool Compare(const char *str1,const char *str2)
   return false;
 }
 
-inline inline void ToReal(uchar in, uchar *out)
+inline inline void ToReal_3Char(uchar in, uchar *out)
 {
   if (in>0)
   {
-    *(out+2)=(in%10)+48;
+    out[2]=(in%10)+48;
     in/=10;
     if (in>0)
     {
-      *(out+1)=(in%10)+48;
+      out[1]=(in%10)+48;
       in/=10;
       if (in>0)
       {
-        *(out)=(in%10)+48;
+        out[0]=(in%10)+48;
         return;
       }
-    *(out)=' ';
+    out[0]=' ';
     return;
     }
-  *(out+1)=' ';
-  *(out)=' ';
-  return;
+    out[1]=' ';
+    out[0]=' ';
+    return;
   }
-  *(out+2)='0';
-  *(out+1)=' ';
-  *(out)=' ';
+  out[2]='0';
+  out[1]=' ';
+  out[0]=' ';
 }
 
-inline void ToChar(uchar in, uchar *out)
+inline void ToChar_R3Char(uchar in, uchar *out)
 {
-  *(out)=in;
-  *(out+1)=' ';
+  out[0]=' ';
+  out[1]=' ';
+  out[2]=in;
 }
 
-inline void ToHex(uchar in, uchar *out)
+inline void ToChar_L2Char(uchar in, uchar *out)
 {
-  if ((in/16)<10)
-  {
-    *out=in/16+48;
-  }
-  else
-  {
-    *out=in/16+55;
-  }
-  if ((in%16)<10)
-  {
-    *(out+1)=in%16+48;
-  }
-  else
-  {
-    *(out+1)=in%16+55;
-  }
+  out[0]=in;
+  out[1]=' ';
+}
+
+inline void ToChar_1Char(uchar in, uchar *out)
+{
+  out[0]=in;
+}
+
+inline void ToHex_2Char(uchar in, uchar *out)
+{
+  out[0] = ((in/16) < 10) ? (in/16) + 48 : (in/16) + 55;
+  out[1] = ((in%16) < 10) ? (in%16) + 48 : (in%16) + 55;
 }
