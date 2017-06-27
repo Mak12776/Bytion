@@ -219,7 +219,6 @@ int main(int argc, char const *argv[])
           ReadDisplayStrings(argv[check_index+1]);
         break;
         case COMM_DUMP_FILE:
-          LOGN("I will dump");
           DumpFile(argv[check_index+1]);
         break;
       }
