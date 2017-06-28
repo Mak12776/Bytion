@@ -46,6 +46,8 @@ Modes:\n\
   c                                         colorful.\n\
   l                                         show ascii letters.\n\
   d                                         show bytes in decimal.\n\
+  for dump:                                 default mode: nothing\n\
+  c                                         colorful.\n\
 "
 
 #define DEFAULT_NUMBER_OF_COLOMNS 15
@@ -79,7 +81,7 @@ HANDLE hConsole;
 
 int main(int argc, char const *argv[])
 {
-  register int check_index=1;
+  int check_index=1;
 
   #ifdef _DEBUG
   printf("---debuging mode---\n");
@@ -211,7 +213,10 @@ int main(int argc, char const *argv[])
   {
     if (arg_number_list[check_index]==enum_type_file) // check for files
     {
-      switch (selected_option) {
+      if (Work_number!=1)
+        fputc('\n', stdout);
+      switch (selected_option)
+      {
         case COMM_DISPLAY:
           ReadDisplayFile(argv[check_index+1]);
         break;
@@ -227,10 +232,10 @@ int main(int argc, char const *argv[])
     }
     if (arg_number_list[check_index]==enum_type_mode) // check for mode command
     {
-      if (selected_option==COMM_DISPLAY)
+      if (selected_option==COMM_DISPLAY)              // check for display modes
       {
         program_mode=MODE_NOTHING;
-        for (register char *check_char=(char *)argv[check_index+1]; *(check_char); check_char++)
+        for (char *check_char=(char *)argv[check_index+1]; *(check_char); ++check_char)
         {
           switch (*check_char)
           {
@@ -242,6 +247,24 @@ int main(int argc, char const *argv[])
             break;
             case 'd':
               program_mode |= MODE_NUMBER;
+            break;
+            default:
+              fprintf(stderr, _ERR_ INVALID_MODE USE_DEFAULT_MODE, argv[check_index+1]);
+              program_mode = MODE_NOTHING;
+              goto OuterContinue;
+            break;
+          }
+        }
+      }
+      else if (selected_option==COMM_DUMP_FILE)          // check for dump modes
+      {
+        program_mode=MODE_NOTHING;
+        for (char *check_char=(char *)argv[check_index+1]; *(check_char);++check_char)
+        {
+          switch (*check_char)
+          {
+            case 'c':
+              program_mode |= MODE_COLOR;
             break;
             default:
               fprintf(stderr, _ERR_ INVALID_MODE USE_DEFAULT_MODE, argv[check_index+1]);
