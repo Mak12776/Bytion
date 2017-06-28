@@ -38,9 +38,9 @@ Options:\n\
   -nm, -no-mode                             restore to default mode\n\
   -d, -display                              read files and write them on stdout\n\
   -ds, -display-strings                     read files and write only strings on stdout\n\
-  -dm, -dump                                dump file byte into stdout\n\
-  -f [pattern], -find [pattern]             find pattern in files (under construction)\n\
+  -dm, -dump                                dump files byte into stdout\n\
   -v, -version                              show version & creator\n\
+\n\
 Modes:\n\
   for display:                              default mode: nothing\n\
   c                                         colorful.\n\
