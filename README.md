@@ -3,7 +3,7 @@ a byte option program
 
 
 ## bytion -help
-'''
+```
 Usage: ./bytion [Option] file [file1] [file2] [file3] ...
 
 Options:
@@ -25,4 +25,4 @@ Modes:
   for dump:                                 default mode: nothing
   c                                         colorful.
   s                                         print space instead of dot
-'''
+```
