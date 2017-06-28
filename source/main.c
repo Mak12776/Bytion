@@ -1,5 +1,5 @@
 
-#define _VERSION "0.120.1"
+#define _VERSION "0.122.1"
 #define _CREATOR "Mohammad Amin Khakzadan"
 #define _CREATOR_GMAIL "mak12776@gmail.com"
 
@@ -48,6 +48,7 @@ Modes:\n\
   d                                         show bytes in decimal.\n\
   for dump:                                 default mode: nothing\n\
   c                                         colorful.\n\
+  s                                         print space instead of dot\n\
 "
 
 #define DEFAULT_NUMBER_OF_COLOMNS 15
@@ -61,10 +62,11 @@ Modes:\n\
 #define COMM_DUMP_FILE 3
 #define COMM_FIND 4
 
-#define MODE_NOTHING 0
-#define MODE_COLOR  0b001
-#define MODE_CHAR   0b010
-#define MODE_NUMBER 0b100
+#define MODE_NOTHING 0                 // do not change this macro values
+#define MODE_COLOR   0b0001 // display, dump
+#define MODE_CHAR    0b0010 // display
+#define MODE_NUMBER  0b0100 // display
+#define MODE_NO_DOT  0b1000 // dump
 
 // variables
 char selected_option=0;
@@ -265,6 +267,9 @@ int main(int argc, char const *argv[])
           {
             case 'c':
               program_mode |= MODE_COLOR;
+            break;
+            case 's':
+              program_mode |= MODE_NO_DOT;
             break;
             default:
               fprintf(stderr, _ERR_ INVALID_MODE USE_DEFAULT_MODE, argv[check_index+1]);

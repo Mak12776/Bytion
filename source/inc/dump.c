@@ -10,6 +10,8 @@
 #include "term_color_mac.h"
 #include "inline/term_color.h"
 
+#define DOT_CHAR '.'
+#define SPACE_CHAR ' '
 
 extern int Work_number;
 extern program_mode_t program_mode;
@@ -54,19 +56,19 @@ void DumpFile(const char *filename)
       {
         if (count<8)
         {
-          fchar[count]=((c>32) && (c<127))?c:'.';
+          fchar[count]=((c>32) && (c<127))?c:DOT_CHAR;
           ToHex_2Char(c, fbyte+count*3);
           ++count;
         }
         else if (count<15)
         {
-          schar[count]=((c>32) && (c<127))?c:'.';
+          schar[count]=((c>32) && (c<127))?c:DOT_CHAR;
           ToHex_2Char(c, sbyte+count*3);
           ++count;
         }
         else
         {
-          raw[79]=((c>32) && (c<127))?c:'.';
+          raw[79]=((c>32) && (c<127))?c:DOT_CHAR;
           ToHex_2Char(c, raw+57);
           sprintf(raw, "%08lx", walk);
           raw[8]=' ';
@@ -155,7 +157,7 @@ void DumpFile(const char *filename)
           if ((tempchar>32) && (tempchar<127))
             putColored(tempchar, COLOR_CHAR);
           else
-            fputc('.', stdout);
+            fputc(DOT_CHAR, stdout);
 
           for (int i=1; i<8; ++i)
           {
@@ -163,7 +165,7 @@ void DumpFile(const char *filename)
             if ((tempchar>32) && (tempchar<127))
               putColored(tempchar, COLOR_CHAR);
             else
-              putColored('.', COLOR_ENV);
+              putColored(DOT_CHAR, COLOR_ENV);
           }
 
           fputc(' ', stdout);                       // one space between chars
@@ -174,13 +176,13 @@ void DumpFile(const char *filename)
             if ((tempchar>32) && (tempchar<127))
               putColored(tempchar, COLOR_CHAR);
             else
-              putColored('.', COLOR_ENV);
+              putColored(DOT_CHAR, COLOR_ENV);
           }
 
           if ((c>32) && (c<127))                           // char 15: c
             putColored(c, COLOR_CHAR);
           else
-            putColored('.', COLOR_ENV);
+            putColored(DOT_CHAR, COLOR_ENV);
 
           printColored("|\n", COLOR_ENV);                  // end of line
           count=0;                             /* reseting count */
@@ -229,7 +231,197 @@ void DumpFile(const char *filename)
             if ((tempchar>32) && (tempchar<127))
               putColored(tempchar, COLOR_CHAR);
             else
-              putColored('.', COLOR_ENV);
+              putColored(DOT_CHAR, COLOR_ENV);
+          }
+          else
+          {
+            fputc(' ', stdout);
+          }
+        }
+        printColored("|\n",COLOR_ENV);
+      }
+    break;
+    case 0b1000:            // no dot
+      while((c=getc(pFile)) != EOF)
+      {
+        if (count<8)
+        {
+          fchar[count]=((c>32) && (c<127))?c:SPACE_CHAR;
+          ToHex_2Char(c, fbyte+count*3);
+          ++count;
+        }
+        else if (count<15)
+        {
+          schar[count]=((c>32) && (c<127))?c:SPACE_CHAR;
+          ToHex_2Char(c, sbyte+count*3);
+          ++count;
+        }
+        else
+        {
+          raw[79]=((c>32) && (c<127))?c:SPACE_CHAR;
+          ToHex_2Char(c, raw+57);
+          sprintf(raw, "%08lx", walk);
+          raw[8]=' ';
+          fputs(raw, stdout);
+          count=0;
+          walk+=16;
+        }
+      }
+      if (count)
+      {
+        while (count<16)
+        {
+          if (count<8)
+          {
+            fchar[count]=' ';
+            fbyte[count*3]=' ';
+            fbyte[count*3+1]=' ';
+            ++count;
+          }
+          else
+          {
+            schar[count]=' ';
+            sbyte[count*3]=' ';
+            sbyte[count*3+1]=' ';
+            ++count;
+          }
+        }
+        sprintf(raw, "%08lx", walk);
+        raw[8]=' ';
+        fputs(raw, stdout);
+      }
+    break;
+    case 0b1001:              // colored, no dot
+      while ((c=getc(pFile)) != EOF)
+      {
+        if (count<15)
+        {
+          tempmem[count]=c;
+          ++count;
+        }
+        else
+        {
+          sprintf(hexstr, "%08lx", walk);             // hex address
+          hexstr[8]=' ';
+          printColored(hexstr, COLOR_ENV);
+          walk+=16;
+
+          tempchar=tempmem[0];                           // byte 0
+          ToHex_2Char(tempchar, bytestr);
+          if ((tempchar>32) && (tempchar<127))
+            printColored(bytestr, COLOR_CHAR);
+          else
+            fputs(bytestr, stdout);
+
+          for (int i=1; i<8; ++i)
+          {
+            tempchar=tempmem[i];                           // byte 1 to 7
+            ToHex_2Char(tempchar, bytestr);
+            if ((tempchar>32) && (tempchar<127))
+              printColored(bytestr, COLOR_CHAR);
+            else
+              printColored(bytestr, COLOR_ENV);
+          }
+
+          fputs("  ", stdout);                    // two space between bytes
+
+          for (int i=8; i<15; ++i)
+          {
+            tempchar=tempmem[i];                           // byte 8 to 14
+            ToHex_2Char(tempchar, bytestr);
+            if ((tempchar>32) && (tempchar<127))
+              printColored(bytestr, COLOR_CHAR);
+            else
+              printColored(bytestr, COLOR_ENV);
+          }
+
+          ToHex_2Char(c, bytestr);                       // byte 15: c
+          if ((c>32) && (c<127))
+            printColored(bytestr, COLOR_CHAR);
+          else
+            printColored(bytestr, COLOR_ENV);
+
+          printColored("  |", COLOR_ENV);            // between bytes and chars
+
+          tempchar=tempmem[0];                            // char 0
+          if ((tempchar>32) && (tempchar<127))
+            putColored(tempchar, COLOR_CHAR);
+          else
+            fputc(SPACE_CHAR, stdout);
+
+          for (int i=1; i<8; ++i)
+          {
+            tempchar=tempmem[i];                            // char 1 to 7
+            if ((tempchar>32) && (tempchar<127))
+              putColored(tempchar, COLOR_CHAR);
+            else
+              putColored(SPACE_CHAR, COLOR_ENV);
+          }
+
+          fputc(' ', stdout);                       // one space between chars
+
+          for (int i=8; i<15; ++i)
+          {
+            tempchar=tempmem[i];                            // char 8 to 14
+            if ((tempchar>32) && (tempchar<127))
+              putColored(tempchar, COLOR_CHAR);
+            else
+              putColored(SPACE_CHAR, COLOR_ENV);
+          }
+
+          if ((c>32) && (c<127))                           // char 15: c
+            putColored(c, COLOR_CHAR);
+          else
+            putColored(SPACE_CHAR, COLOR_ENV);
+
+          printColored("|\n", COLOR_ENV);                  // end of line
+          count=0;                             /* reseting count */
+        }
+      }
+      if (count)
+      {
+        sprintf(hexstr, "%08lx", walk);             // hex address
+        hexstr[8]=' ';
+        printColored(hexstr, COLOR_ENV);
+
+        for (int cnt=0; cnt<16; ++cnt)             // for bytes
+        {
+          if (cnt==8)
+          {
+            fputs("  ", stdout);
+          }
+          if (cnt<count)
+          {
+            tempchar=tempmem[cnt];
+            ToHex_2Char(tempchar, bytestr);
+            if ((tempchar>32) && (tempchar<127))
+              printColored(bytestr, COLOR_CHAR);
+            else
+              printColored(bytestr, COLOR_ENV);
+          }
+          else
+          {
+            bytestr[0]=' ';
+            bytestr[1]=' ';
+            fputs(bytestr, stdout);
+          }
+        }
+
+        printColored("  |", COLOR_ENV);
+
+        for (int cnt=0; cnt<16; ++cnt)           // for chars
+        {
+          if (cnt==8)
+          {
+            fputc(' ', stdout);
+          }
+          if (cnt<count)
+          {
+            tempchar=tempmem[cnt];
+            if ((tempchar>32) && (tempchar<127))
+              putColored(tempchar, COLOR_CHAR);
+            else
+              putColored(SPACE_CHAR, COLOR_ENV);
           }
           else
           {
