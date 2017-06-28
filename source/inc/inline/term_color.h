@@ -5,6 +5,11 @@
 
 #include <stdio.h>
 
+#if defined _WIN32 || defined _WIN64
+#include <windows.h>
+extern HANDLE hConsole;
+#endif
+
 extern char _terminal_color_fore;
 
 inline void SetColor(const char clr)

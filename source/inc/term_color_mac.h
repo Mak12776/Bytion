@@ -13,12 +13,12 @@
 #define COL_DEFAULT 39
 #elif defined _WIN32 || defined _WIN64
 #define COL_BLACK 0
-#define COL_RED 4
-#define COL_GREEN 2
-#define COL_YELLOW 6
-#define COL_BLUE 1
-#define COL_MAGENTA 5
-#define COL_CYAN 3
+#define COL_RED 12
+#define COL_GREEN 10
+#define COL_YELLOW 14
+#define COL_BLUE 9
+#define COL_MAGENTA 13
+#define COL_CYAN 11
 #define COL_WHITE 15
 #define COL_GRAY 8
 #define COL_DEFAULT 7
