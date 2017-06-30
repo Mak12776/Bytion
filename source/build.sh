@@ -1,6 +1,7 @@
 MAIN="main.c"
 SRCS=(display dump)
 OBJS=( )
+OUT="../Builds/bytion"
 
 for i in ${!SRCS[*]}; do
   OBJS[i]="objs/${SRCS[i]}.o";
@@ -29,7 +30,7 @@ function RegularBuild() {
     exit 1
   fi
   echo "---Building Bytion---"
-  gcc -O3 -o bytion $MAIN ${OBJS[*]}
+  gcc -O3 -o $OUT $MAIN ${OBJS[*]}
   if [ $? -eq 0 ]; then
     echo "---Build successfull---"
   fi
@@ -41,7 +42,7 @@ function  DebugBuild() {
     exit 1
   fi
   echo "---Building Bytion---"
-  gcc -O3 -D_DEBUG -o bytion $MAIN ${OBJS[*]} -Wextra
+  gcc -O3 -D_DEBUG -o $OUT $MAIN ${OBJS[*]} -Wextra
   if [ $? -eq 0 ]; then
     echo "---Debug Build Successfull---"
   fi
