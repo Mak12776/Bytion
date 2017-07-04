@@ -26,3 +26,5 @@ Modes:
   c                                         colorful.
   s                                         print space instead of dot
 ```
+##license
+ DO WHAT THE FUCK YOU WANT TO PUBLIC LICENSE
