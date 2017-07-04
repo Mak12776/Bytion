@@ -37,8 +37,8 @@ Options:\n\
                                             modes can be a string of letters\n\
   -nm, -no-mode                             restore to default mode\n\
   -d, -display                              read files and write them on stdout\n\
-  -ds, -display-strings                     read files and write only strings on stdout\n\
   -dm, -dump                                dump files byte into stdout\n\
+  -str, -strings                            show null terminated strings
   -v, -version                              show version & creator\n\
 \n\
 Modes:\n\
@@ -130,7 +130,7 @@ int main(int argc, char const *argv[])
           continue;
         }
       }
-      if (Compare(argv[check_index]+1, "ds") || Compare(argv[check_index]+1, "display-strings")) // display-strings
+      if (Compare(argv[check_index]+1, "str") || Compare(argv[check_index]+1, "strings")) // display strings
       {
         if (selected_option)
         {
